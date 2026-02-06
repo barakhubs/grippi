@@ -5,6 +5,7 @@ D:\grippi\.net\Facebook\FacebookClient\obj\Debug\net8.0\FacebookClient.Generated
 D:\grippi\.net\Facebook\FacebookClient\obj\Debug\net8.0\FacebookClient.AssemblyInfoInputs.cache
 D:\grippi\.net\Facebook\FacebookClient\obj\Debug\net8.0\FacebookClient.AssemblyInfo.cs
 D:\grippi\.net\Facebook\FacebookClient\obj\Debug\net8.0\FacebookClient.csproj.CoreCompileInputs.cache
+D:\grippi\.net\Facebook\FacebookClient\obj\Debug\net8.0\FacebookClient.sourcelink.json
 D:\grippi\.net\Facebook\FacebookClient\obj\Debug\net8.0\FacebookClient.dll
 D:\grippi\.net\Facebook\FacebookClient\obj\Debug\net8.0\refint\FacebookClient.dll
 D:\grippi\.net\Facebook\FacebookClient\obj\Debug\net8.0\FacebookClient.pdb

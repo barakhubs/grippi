@@ -16,6 +16,7 @@ D:\grippi\.net\XTwitter\TwitterXClient\obj\Debug\net8.0\TwitterXClient.Generated
 D:\grippi\.net\XTwitter\TwitterXClient\obj\Debug\net8.0\TwitterXClient.AssemblyInfoInputs.cache
 D:\grippi\.net\XTwitter\TwitterXClient\obj\Debug\net8.0\TwitterXClient.AssemblyInfo.cs
 D:\grippi\.net\XTwitter\TwitterXClient\obj\Debug\net8.0\TwitterXClient.csproj.CoreCompileInputs.cache
+D:\grippi\.net\XTwitter\TwitterXClient\obj\Debug\net8.0\TwitterXClient.sourcelink.json
 D:\grippi\.net\XTwitter\TwitterXClient\obj\Debug\net8.0\TwitterXClient.dll
 D:\grippi\.net\XTwitter\TwitterXClient\obj\Debug\net8.0\refint\TwitterXClient.dll
 D:\grippi\.net\XTwitter\TwitterXClient\obj\Debug\net8.0\TwitterXClient.pdb

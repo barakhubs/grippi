@@ -60,6 +60,7 @@ namespace XTwitterSdk
             if (imageUrls == null || imageUrls.Count == 0)
             {
                 response = "No image URLs provided.";
+                PostTweet(apiKey, apiSecret, accessToken, accessSecret, tweetText, out success, out statusCode, out response);
                 return;
             }
 
