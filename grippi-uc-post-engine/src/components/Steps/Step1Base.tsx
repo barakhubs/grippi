@@ -105,7 +105,6 @@ export const Step1Base: React.FC<Step1BaseProps> = ({
       <div className="ucpe_panel-header">
         <div>
           <p className="ucpe_eyebrow">Step 1 of 5</p>
-          <h2>Base Post Creation</h2>
         </div>
       </div>
 
@@ -114,10 +113,15 @@ export const Step1Base: React.FC<Step1BaseProps> = ({
         onSubmit={(e) => e.preventDefault()}
       >
         <fieldset className="ucpe_fieldset">
-          <legend>General Information</legend>
+          <legend style={{ width: "auto", border: "none" }}>
+            General Information
+          </legend>
 
           <div className="ucpe_field-horizontal ucpe_field-full">
-            <label className="ucpe_field-label">
+            <label
+              style={{ width: "100%" }}
+              className="gx-label col-sm-3 AttributeDateTimeLabel control-label"
+            >
               <span>
                 Post Title <span className="ucpe_required">*</span>
               </span>
@@ -142,7 +146,10 @@ export const Step1Base: React.FC<Step1BaseProps> = ({
           </div>
 
           <div className="ucpe_field-horizontal ucpe_field-full">
-            <label className="ucpe_field-label">
+            <label
+              style={{ width: "100%" }}
+              className="gx-label col-sm-3 AttributeDateTimeLabel control-label"
+            >
               <span>
                 Base Post Content <span className="ucpe_required">*</span>
               </span>
@@ -167,7 +174,10 @@ export const Step1Base: React.FC<Step1BaseProps> = ({
           </div>
 
           <div className="ucpe_field-horizontal">
-            <label className="ucpe_field-label">
+            <label
+              style={{ width: "100%" }}
+              className="gx-label col-sm-3 AttributeDateTimeLabel control-label"
+            >
               <span>Language</span>
             </label>
             <div className="ucpe_field-input">
@@ -175,15 +185,18 @@ export const Step1Base: React.FC<Step1BaseProps> = ({
                 value={language}
                 onChange={(e) => onLanguageChange(e.target.value)}
               >
-                <option>English (mock)</option>
-                <option>Spanish (mock)</option>
-                <option>French (mock)</option>
+                <option>English</option>
+                <option>Spanish</option>
+                <option>French</option>
               </select>
             </div>
           </div>
 
           <div className="ucpe_field-horizontal">
-            <label className="ucpe_field-label">
+            <label
+              style={{ width: "100%" }}
+              className="gx-label col-sm-3 AttributeDateTimeLabel control-label"
+            >
               <span>Tone of Voice</span>
             </label>
             <div className="ucpe_field-input">
@@ -191,10 +204,10 @@ export const Step1Base: React.FC<Step1BaseProps> = ({
                 value={tone}
                 onChange={(e) => onToneChange(e.target.value)}
               >
-                <option>Confident (mock)</option>
-                <option>Friendly (mock)</option>
-                <option>Playful (mock)</option>
-                <option>Analytical (mock)</option>
+                <option>Confident</option>
+                <option>Friendly</option>
+                <option>Playful</option>
+                <option>Analytical</option>
               </select>
             </div>
           </div>

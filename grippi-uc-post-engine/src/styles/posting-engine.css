@@ -18,7 +18,7 @@
 }
 
 .ucpe_layout {
-  max-width: 1200px;
+  /* max-width: 1200px; */
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -1166,7 +1166,7 @@ input[type="radio"]:focus {
 
 .ucpe_publish-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* grid-template-columns: 1fr 1fr; */
   gap: 24px;
   margin-bottom: 20px;
 }
@@ -1541,7 +1541,7 @@ input[type="radio"]:focus {
 /* Media Library Modal */
 .ucpe_modal-large {
   min-width: 900px;
-  /* width: 90vw; */
+  max-width: 1200px;
 }
 
 /* Tabs */

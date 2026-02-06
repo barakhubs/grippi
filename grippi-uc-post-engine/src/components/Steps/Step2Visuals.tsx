@@ -159,13 +159,14 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
         <div className="ucpe_panel-header">
           <div>
             <p className="ucpe_eyebrow">Step 2 of 5</p>
-            <h2>Visual Selection</h2>
           </div>
-        </div>
+        </div> 
 
         <fieldset className="ucpe_fieldset">
-          <legend>Visual Selection</legend>
-
+          <legend style={{ width: "auto", border: "none" }}>
+            Visual Selection
+          </legend>
+ 
           <div className="ucpe_media-actions">
             <button
               type="button"

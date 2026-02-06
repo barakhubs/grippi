@@ -122,7 +122,6 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
         <div className="ucpe_panel-header">
           <div>
             <p className="ucpe_eyebrow">Step 4 of 5</p>
-            <h2>Review & Preview</h2>
           </div>
           <div className="ucpe_view-toggles" aria-label="Preview toggles">
             <label>
@@ -149,7 +148,9 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
         </div>
 
         <fieldset className="ucpe_fieldset">
-          <legend>Review & Preview</legend>
+          <legend style={{ width: "auto", border: "none" }}>
+            Review & Preview
+          </legend>
 
           <div className="ucpe_platform-selector">
             {selectedChannels.map((channelId) => {

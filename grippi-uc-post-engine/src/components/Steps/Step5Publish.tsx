@@ -29,12 +29,13 @@ export const Step5Publish: React.FC<Step5PublishProps> = ({
       <div className="ucpe_panel-header">
         <div>
           <p className="ucpe_eyebrow">Step 5 of 5</p>
-          <h2>Review & Publish</h2>
         </div>
       </div>
 
       <fieldset className="ucpe_fieldset">
-        <legend>Review & Publish</legend>
+        <legend style={{ width: "auto", border: "none" }}>
+          Review & Publish
+        </legend>
 
         <div className="ucpe_publish-container">
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
@@ -81,8 +82,7 @@ export const Step5Publish: React.FC<Step5PublishProps> = ({
                     fontStyle: "italic",
                   }}
                 >
-                  Note: Currently in simulation mode. Check console for detailed
-                  logs.
+                  Note: Currently in simulation mode.
                 </p>
               </>
             )}

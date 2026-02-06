@@ -69,12 +69,13 @@ export const Step3Channels: React.FC<Step3ChannelsProps> = ({
       <div className="ucpe_panel-header">
         <div>
           <p className="ucpe_eyebrow">Step 3 of 5</p>
-          <h2>Social Media Channel Selection</h2>
         </div>
       </div>
 
       <fieldset className="ucpe_fieldset">
-        <legend>Social Media Channel Selection</legend>
+        <legend style={{ width: "auto", border: "none" }}>
+          Social Media Channel Selection
+        </legend> 
 
         <div className="ucpe_channels-body" style={{ minHeight: "250px" }}>
           <div className="ucpe_channels">
