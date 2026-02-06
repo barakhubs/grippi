@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Gallery with Search</title>
+
+    <!-- nanogallery2 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/nanogallery2@3/dist/css/nanogallery2.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+      }
+
+      .uc_ml-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+      }
+
+      .uc_ml-search-container {
+        max-width: 600px;
+        margin: 0 auto 30px;
+        text-align: center;
+      }
+
+      .uc_ml-search-input {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 16px;
+        border: 2px solid #d2a307;
+        border-radius: 25px;
+        outline: none;
+        transition: border-color 0.3s;
+      }
+
+      .uc_ml-search-input:focus {
+        border-color: #efb905;
+      }
+
+      .uc_ml-search-input.uc_ml-no-results {
+        border-color: #ff6b6b;
+      }
+
+      .uc_ml-controls-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .uc_ml-pagination-info {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .uc_ml-items-per-page {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .uc_ml-items-per-page label {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .uc_ml-items-per-page select {
+        padding: 8px 12px;
+        border: 2px solid #d2a307;
+        border-radius: 5px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+        outline: none;
+      }
+
+      .uc_ml-items-per-page select:focus {
+        border-color: #efb905;
+      }
+
+      .uc_ml-pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+      }
+
+      .uc_ml-pagination-btn {
+        padding: 10px 15px;
+        background: #d2a307;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s;
+        min-width: 40px;
+      }
+
+      .uc_ml-pagination-btn:hover:not(:disabled) {
+        background: #efb905;
+        transform: translateY(-2px);
+      }
+
+      .uc_ml-pagination-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .uc_ml-pagination-btn.uc_ml-active {
+        background: #a07100;
+        font-weight: bold;
+      }
+
+      .uc_ml-page-numbers {
+        display: flex;
+        gap: 5px;
+      }
+
+      .uc_ml-stats-container {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        color: #555;
+      }
+
+      .uc_ml-stats-container strong {
+        color: #d2a307;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="uc_ml-container">
+      <div class="uc_ml-search-container">
+        <input
+          type="text"
+          id="uc_ml-searchInput"
+          class="uc_ml-search-input"
+          placeholder="Type to search images by title or tags..."
+        />
+      </div>
+
+      <div class="uc_ml-stats-container">
+        <span id="uc_ml-statsDisplay">Loading media library...</span>
+      </div>
+
+      <div class="uc_ml-controls-container">
+        <div class="uc_ml-pagination-info">
+          <span id="uc_ml-pageInfo">Page 1 of 1</span>
+        </div>
+        <div class="uc_ml-items-per-page">
+          <label for="uc_ml-itemsPerPage">Items per page:</label>
+          <select id="uc_ml-itemsPerPage">
+            <option value="12">12</option>
+            <option value="24" selected>24</option>
+            <option value="36">36</option>
+            <option value="48">48</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="uc_ml-nanogallery"></div>
+
+      <div class="uc_ml-pagination-container" id="uc_ml-paginationContainer">
+        <!-- Pagination buttons will be inserted here -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- nanogallery2 -->
+    <script src="https://cdn.jsdelivr.net/npm/nanogallery2@3/dist/jquery.nanogallery2.min.js"></script>
+
+    <!-- Main App Script -->
+    <script src="app.js"></script>
+  </body>
+</html>
