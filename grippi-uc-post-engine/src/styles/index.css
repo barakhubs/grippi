@@ -1,0 +1,19 @@
+/* Styles Index - Social Media Posting Engine */
+/* Import this file to get all application styles */
+
+/* Main posting engine styles - contains all component styles from vanilla JS */
+@import "./posting-engine.css";
+
+/* Note: All styles have been consolidated into posting-engine.css
+ * This includes:
+ * - CSS variables and theming
+ * - Layout components (stepper, panels, etc.)
+ * - Form elements and inputs
+ * - Image gallery and media library
+ * - Channel selection cards
+ * - Platform preview frames (mobile/desktop)
+ * - Modal overlays (edit, AI editor, media library)
+ * - Social media platform-specific styles (Facebook, Instagram, X, TikTok, Snapchat)
+ * - Responsive breakpoints
+ * - Animations and transitions
+ */
