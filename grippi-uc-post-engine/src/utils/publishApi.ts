@@ -1,5 +1,5 @@
 import type { GeneratedOutput, MediaData } from "../types";
-import { env } from "../config/env";
+import { dataStore } from "../data/DataStore";
 
 export interface PublishPayload {
   postTitle: string;
@@ -29,15 +29,18 @@ export interface PublishResponse {
 export const publishPosts = async (
   payload: PublishPayload,
 ): Promise<PublishResponse> => {
-  if (env.enableLogging) {
-    console.group("📤 Publishing Posts to API");
-    console.log("API URL:", env.apiUrl);
-    console.log("Timestamp:", new Date().toISOString());
-    console.log("Payload:", payload);
-    console.groupEnd();
-  }
+  const baseUrl = dataStore.get("baseUrl");
 
-  const response = await fetch(env.apiUrl + "/api/posts/publish", {
+  // if (env.enableLogging) {
+  //   console.group("📤 Publishing Posts to API");
+  //   console.log("API URL:", env.apiUrl);
+  //   console.log("Base URL:", baseUrl);
+  //   console.log("Timestamp:", new Date().toISOString());
+  //   console.log("Payload:", payload);
+  //   console.groupEnd();
+  // }
+  console.log("baseUrl", baseUrl);
+  const response = await fetch(baseUrl + "api/posts/publish", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -45,9 +48,9 @@ export const publishPosts = async (
     body: JSON.stringify({ PostPublishRequestBody: payload }),
   });
 
-  if (env.enableLogging) {
-    console.log("📡 Response Status:", response.status, response.statusText);
-  }
+  // if (env.enableLogging) {
+  //   console.log("📡 Response Status:", response.status, response.statusText);
+  // }
 
   if (!response.ok) {
     throw new Error(`Failed to publish: ${response.statusText}`);
@@ -57,11 +60,11 @@ export const publishPosts = async (
   console.log("data", data);
   console.log("data.PublishResponse", data.data);
 
-  if (env.enableLogging) {
-    console.group("✅ Publish Response (REAL API)");
-    console.log("Response:", data);
-    console.groupEnd();
-  }
+  // if (env.enableLogging) {
+  //   console.group("✅ Publish Response (REAL API)");
+  //     console.log("Response:", data);
+  //   console.groupEnd();
+  // }
 
   return data;
 };

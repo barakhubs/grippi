@@ -3,9 +3,13 @@
  * All environment variables must be prefixed with VITE_ to be exposed to the client
  */
 
+import { dataStore } from "../data/DataStore";
+
+const baseUrl = dataStore.get("baseUrl");
+
 export const env = {
   // API Configuration
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000",
+  apiBaseUrl: baseUrl,
 
   // App Configuration
   appName: import.meta.env.VITE_APP_NAME || "Grippi Post Engine",

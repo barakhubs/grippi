@@ -1,4 +1,5 @@
 import { env } from "../config/env";
+import { dataStore } from "../data/DataStore";
 
 export interface UploadedFile {
   id: string;
@@ -214,8 +215,9 @@ export const uploadFiles = async (
     console.log("All uploaded files:", uploadedFiles);
   }
 
+  const baseUrl = dataStore.get("baseUrl");
   // Save to backend API
-  const apiResponse = await fetch(`${env.apiUrl}/api/media/media-upload`, {
+  const apiResponse = await fetch(`${baseUrl}/api/media/media-upload`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
