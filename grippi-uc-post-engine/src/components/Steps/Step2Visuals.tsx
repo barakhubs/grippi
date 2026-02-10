@@ -160,21 +160,21 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
           <div>
             <p className="ucpe_eyebrow">Step 2 of 5</p>
           </div>
-        </div> 
+        </div>
 
         <fieldset className="ucpe_fieldset">
           <legend style={{ width: "auto", border: "none" }}>
             Visual Selection
           </legend>
- 
+
           <div className="ucpe_media-actions">
             <button
               type="button"
               className="ucpe_btn-outline"
               onClick={() => setShowMediaLibrary(true)}
             >
-              <i className="fa-solid fa-folder-open"></i>
-              Select from Media Library
+              <i className="fa-solid fa-folder-open"></i> 
+               &nbsp; Select from Media Library
             </button>
             <label
               className="ucpe_btn-outline"
@@ -282,12 +282,31 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
           >
             <div className="ucpe_modal-header">
               <h3>Media Library</h3>
-              <button
-                className="ucpe_modal-close"
-                onClick={() => setShowMediaLibrary(false)}
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
-                &times;
-              </button>
+                <span
+                  style={{
+                    background:
+                      selectedMediaItems.size >= 4
+                        ? "var(--danger, #dc3545)"
+                        : "var(--primary, #007bff)",
+                    color: "white",
+                    padding: "4px 12px",
+                    borderRadius: "12px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                  }}
+                >
+                  {selectedMediaItems.size}/4 selected
+                </span>
+                <button
+                  className="ucpe_modal-close"
+                  onClick={() => setShowMediaLibrary(false)}
+                >
+                  &times;
+                </button>
+              </div>
             </div>
             <div className="ucpe_modal-body">
               {/* Tabs */}
@@ -351,7 +370,10 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
                         if (newSelected.has(item.src)) {
                           newSelected.delete(item.src);
                         } else {
-                          newSelected.add(item.src);
+                          // Limit to 4 selections
+                          if (newSelected.size < 4) {
+                            newSelected.add(item.src);
+                          }
                         }
                         setSelectedMediaItems(newSelected);
                       }}
@@ -411,8 +433,9 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
               <button
                 className="ButtonMaterial btn btn-primary"
                 onClick={addSelectedMediaToGallery}
+                disabled={selectedMediaItems.size === 0}
               >
-                Add Selected
+                Add Selected ({selectedMediaItems.size})
               </button>
             </div>
           </div>

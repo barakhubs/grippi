@@ -24,6 +24,7 @@ function App() {
     isPublishing,
     publishError,
     publishSuccess,
+    publishResponse,
     setCurrentStep,
     setPostTitle,
     setPostContent,
@@ -34,6 +35,7 @@ function App() {
     setIsPublishing,
     setPublishError,
     setPublishSuccess,
+    setPublishResponse,
     addImage,
     toggleImageSelection,
     updateImageSrc,
@@ -65,6 +67,7 @@ function App() {
     setIsPublishing(true);
     setPublishError(null);
     setPublishSuccess(false);
+    setPublishResponse(null);
 
     try {
       const payload: PublishPayload = {
@@ -81,7 +84,8 @@ function App() {
 
       if (response.success) {
         setPublishSuccess(true);
-        console.log("🎉 Publishing completed successfully!");
+        setPublishResponse(response);
+        console.log("🎉 Publishing completed successfully!", response);
       } else {
         throw new Error(response.message || "Publishing failed");
       }
@@ -163,6 +167,7 @@ function App() {
           isPublishing={isPublishing}
           publishError={publishError}
           publishSuccess={publishSuccess}
+          publishResponse={publishResponse}
         />
       )}
     </main>

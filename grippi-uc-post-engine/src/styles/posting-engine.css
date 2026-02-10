@@ -7,7 +7,11 @@
   --accent: #000000;
   --accent-2: #ffff01;
   --success: #16a34a;
+  --success-bg: #ecfdf5;
   --danger: #e11d48;
+  --error: #ef4444;
+  --error-bg: #fef2f2;
+  --warning: #f59e0b;
   --shadow: 0 10px 35px rgba(18, 38, 63, 0.12);
   --radius: 14px;
   --font-base: "Segoe UI", "Bahnschrift", "Trebuchet MS", sans-serif;

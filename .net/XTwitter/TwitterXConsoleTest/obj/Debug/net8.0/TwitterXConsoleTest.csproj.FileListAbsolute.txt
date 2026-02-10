@@ -34,3 +34,4 @@ D:\grippi\.net\XTwitter\TwitterXConsoleTest\obj\Debug\net8.0\refint\TwitterXCons
 D:\grippi\.net\XTwitter\TwitterXConsoleTest\obj\Debug\net8.0\TwitterXConsoleTest.pdb
 D:\grippi\.net\XTwitter\TwitterXConsoleTest\obj\Debug\net8.0\TwitterXConsoleTest.genruntimeconfig.cache
 D:\grippi\.net\XTwitter\TwitterXConsoleTest\obj\Debug\net8.0\ref\TwitterXConsoleTest.dll
+D:\grippi\.net\XTwitter\TwitterXConsoleTest\obj\Debug\net8.0\TwitterXConsoleTest.sourcelink.json

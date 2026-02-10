@@ -64,7 +64,7 @@ class Program
         Console.WriteLine("Success: " + imagePaths);
         client.PostMultiplePhotos(
             "927754980428829",
-            "EAAMcvwdk8bwBQrZBS2TuhoynPD1wJZAegkIOfSHHkm7fCr4CZAcCdZCUa5kZBJZBguKfERdsNe46eY1joqo7WCkkZCtnMrZCx7GXJFTfRdSrbgN7xwZBOzMfqoQovySqwm11dQdPT39XPLPKfiKZB9N9BDxFtp3O4M9p0tZA27kkAYnjlc4RzZB4GvMnF2m41vafCCUIkWEZCpzwsAowbppmhaCiSZCuyEXZBgGkiJAeHNzZAV4zzucZD",
+            "EAAMcvwdk8bwBQiYIBXQduY8QLkSwqZBqBNLAArSnGWjsB7TYrmN60XHTjG5jmhQVW5PTQ0m390HndrViv8H13KxYf0j2OPkKf9irxjU5hGqkX2PbfhEU9yw8dCcHnEMOyVYZCISIh089Dp2LumSlEwPVMqu5T92rt7V5eZCVodYFcoPMUqAQxweyWYSCNeFMVYkRYpF",
             imagePaths,
             "Check out these photos! 📸",
             out success,

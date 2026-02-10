@@ -29,6 +29,7 @@ export const usePostingEngine = () => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
   const [publishSuccess, setPublishSuccess] = useState(false);
+  const [publishResponse, setPublishResponse] = useState<any>(null);
 
   const [appConfig, setAppConfig] = useState<AppConfig>({
     companyName: "Grippi",
@@ -105,6 +106,10 @@ export const usePostingEngine = () => {
     setGeneratedOutputs([]);
     setApprovalState(new Map());
     setCurrentPlatformView(null);
+    setIsPublishing(false);
+    setPublishError(null);
+    setPublishSuccess(false);
+    setPublishResponse(null);
   }, []);
 
   return {
@@ -124,6 +129,7 @@ export const usePostingEngine = () => {
     isPublishing,
     publishError,
     publishSuccess,
+    publishResponse,
 
     // Setters
     setCurrentStep,
@@ -138,6 +144,7 @@ export const usePostingEngine = () => {
     setIsPublishing,
     setPublishError,
     setPublishSuccess,
+    setPublishResponse,
 
     // Actions
     addImage,

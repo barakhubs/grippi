@@ -97,15 +97,15 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
     setShowEditModal(false);
   };
 
-  const handleImprove = () => {
-    if (currentPlatformView && currentOutput) {
-      onUpdateText(
-        currentPlatformView,
-        currentOutput.platformContent +
-          "\n\nAI enhanced: Improved engagement & clarity.",
-      );
-    }
-  };
+  // const handleImprove = () => {
+  //   if (currentPlatformView && currentOutput) {
+  //     onUpdateText(
+  //       currentPlatformView,
+  //       currentOutput.platformContent +
+  //         "\n\nAI enhanced: Improved engagement & clarity.",
+  //     );
+  //   }
+  // };
 
   return (
     <>
@@ -215,9 +215,9 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
             <button className="ucpe_btn-ghost" onClick={openEditModal}>
               Edit
             </button>
-            <button className="ucpe_btn-soft" onClick={handleImprove}>
+            {/* <button className="ucpe_btn-soft" onClick={handleImprove}>
               Request AI improvement
-            </button>
+            </button> */}
           </div>
         </fieldset>
 
