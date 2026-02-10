@@ -265,7 +265,7 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
                   style={{
                     width: `${uploadProgress.percentage}%`,
                     height: "100%",
-                    background: "var(--primary, #007bff)",
+                    background: "var(--primary, #e6b71b)",
                     transition: "width 0.3s ease",
                   }}
                 />
@@ -371,7 +371,7 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
                     background:
                       totalSelected >= maxSelections
                         ? "var(--danger, #dc3545)"
-                        : "var(--primary, #007bff)",
+                        : "var(--primary, #e6b71b)",
                     color: "white",
                     padding: "4px 12px",
                     borderRadius: "12px",
