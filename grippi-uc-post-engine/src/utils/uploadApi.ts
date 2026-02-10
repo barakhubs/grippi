@@ -26,12 +26,26 @@ export interface UploadApiResponse {
   message?: string;
 }
 
+export interface UploadProgress {
+  completedFiles: number;
+  totalFiles: number;
+  percentage: number;
+  currentFile: string;
+}
+
+export interface UploadCallbacks {
+  onProgress?: (progress: UploadProgress) => void;
+  onSuccess?: (uploadedFiles: UploadedFile[]) => void;
+  onFail?: (message: string) => void;
+}
+
 /**
  * Upload a file to Dropbox
  */
 export const uploadToDropbox = async (
   file: File,
 ): Promise<{ uploadResult: any; fileType: string }> => {
+  const accessToken = dataStore.get("dropboxAccessToken") || "";
   const fileContent = await file.arrayBuffer();
 
   let fileType = "other";
@@ -39,8 +53,6 @@ export const uploadToDropbox = async (
     fileType = "Image";
   } else if (file.type.startsWith("video/")) {
     fileType = "Video";
-  } else if (file.type === "application/pdf") {
-    fileType = "PDF";
   }
 
   const uploadResponse = await fetch(
@@ -48,7 +60,7 @@ export const uploadToDropbox = async (
     {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + env.dropboxAccessToken,
+        Authorization: "Bearer " + accessToken,
         "Dropbox-API-Arg": JSON.stringify({
           autorename: true,
           mode: "add",
@@ -83,13 +95,15 @@ export const uploadToDropbox = async (
 export const getDropboxShareableLink = async (
   pathDisplay: string,
 ): Promise<{ shareUrl: string; fileUrl: string }> => {
+  const accessToken = dataStore.get("dropboxAccessToken") || "";
+
   // Try to create shareable link
   const linkResponse = await fetch(
     "https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings",
     {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + env.dropboxAccessToken,
+        Authorization: "Bearer " + accessToken,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -132,7 +146,7 @@ export const getDropboxShareableLink = async (
         {
           method: "POST",
           headers: {
-            Authorization: "Bearer " + env.dropboxAccessToken,
+            Authorization: "Bearer " + accessToken,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -176,6 +190,7 @@ export const getDropboxShareableLink = async (
 export const uploadFiles = async (
   files: File[],
   tags: string[] = [],
+  callbacks?: UploadCallbacks,
 ): Promise<UploadedFile[]> => {
   if (env.enableLogging) {
     console.group("📤 Uploading Files");
@@ -185,6 +200,8 @@ export const uploadFiles = async (
   }
 
   const uploadedFiles: UploadedFile[] = [];
+  let completedFiles = 0;
+  let dropboxFailed = false;
 
   // Upload each file
   for (const file of files) {
@@ -193,22 +210,54 @@ export const uploadFiles = async (
       continue;
     }
 
-    // Upload to Dropbox
-    const { uploadResult, fileType } = await uploadToDropbox(file);
+    try {
+      // Report progress - starting upload
+      if (callbacks?.onProgress) {
+        const percentage = Math.round((completedFiles / files.length) * 100);
+        callbacks.onProgress({
+          completedFiles,
+          totalFiles: files.length,
+          percentage,
+          currentFile: file.name,
+        });
+      }
 
-    // Get shareable link
-    const { shareUrl, fileUrl } = await getDropboxShareableLink(
-      uploadResult.path_display,
-    );
+      // Upload to Dropbox
+      const { uploadResult, fileType } = await uploadToDropbox(file);
 
-    uploadedFiles.push({
-      id: uploadResult.id,
-      name: uploadResult.name,
-      path: uploadResult.path_display,
-      shareUrl: shareUrl,
-      fileUrl: fileUrl,
-      fileType: fileType,
-    });
+      // Get shareable link
+      const { shareUrl, fileUrl } = await getDropboxShareableLink(
+        uploadResult.path_display,
+      );
+
+      uploadedFiles.push({
+        id: uploadResult.id,
+        name: uploadResult.name,
+        path: uploadResult.path_display,
+        shareUrl: shareUrl,
+        fileUrl: fileUrl,
+        fileType: fileType,
+      });
+
+      completedFiles += 1;
+    } catch (error) {
+      console.error(
+        "Dropbox upload failed for",
+        file.name,
+        error instanceof Error ? error.message : error,
+      );
+      dropboxFailed = true;
+      break;
+    }
+  }
+
+  if (dropboxFailed || uploadedFiles.length === 0) {
+    const errorMessage = "Upload to Dropbox failed. Nothing was saved.";
+    console.error("Aborting: one or more files failed to upload to Dropbox.");
+    if (callbacks?.onFail) {
+      callbacks.onFail(errorMessage);
+    }
+    throw new Error(errorMessage);
   }
 
   if (env.enableLogging) {
@@ -217,7 +266,7 @@ export const uploadFiles = async (
 
   const baseUrl = dataStore.get("baseUrl");
   // Save to backend API
-  const apiResponse = await fetch(`${baseUrl}/api/media/media-upload`, {
+  const apiResponse = await fetch(`${baseUrl}api/media/media-upload`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -236,15 +285,23 @@ export const uploadFiles = async (
   });
 
   if (!apiResponse.ok) {
-    throw new Error(
-      `API request failed: ${apiResponse.status} ${apiResponse.statusText}`,
-    );
+    const errorMessage = `API request failed: ${apiResponse.status} ${apiResponse.statusText}`;
+    if (callbacks?.onFail) {
+      callbacks.onFail(errorMessage);
+    }
+    throw new Error(errorMessage);
   }
 
   const apiResult = await apiResponse.json();
 
   if (env.enableLogging) {
     console.log("API response:", apiResult);
+  }
+
+  if (apiResult.IsInserted === true) {
+    if (callbacks?.onSuccess) {
+      callbacks.onSuccess(uploadedFiles);
+    }
   }
 
   return uploadedFiles;

@@ -6,12 +6,12 @@ import { dataStore } from "./data/DataStore.ts";
 // import { param1, param2, param3 } from "./data/data.ts";
 import type { Channel, MediaData } from "./types/index.ts";
 
-export function createWidget(socialMediaChannels: Channel[], mediaDataCollection: MediaData[], baseUrl: string) {
+export function createWidget(socialMediaChannels: Channel[], mediaDataCollection: MediaData[], baseUrl: string, accessToken: string) {
   dataStore.set("socialMediaChannels", socialMediaChannels);
   dataStore.set("mediaDataCollection", mediaDataCollection);
   dataStore.set("baseUrl", baseUrl);
-
-  console.log("baseUrl", dataStore.get("baseUrl"));
+  dataStore.set("dropboxAccessToken", accessToken);
+  console.log("accessToken", accessToken);
   return createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <App />

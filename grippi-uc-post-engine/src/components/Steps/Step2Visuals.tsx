@@ -35,6 +35,11 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
   );
   const [mediaTab, setMediaTab] = useState<"images" | "videos">("images");
   const [searchQuery, setSearchQuery] = useState("");
+  const [uploadProgress, setUploadProgress] = useState<{
+    show: boolean;
+    percentage: number;
+    currentFile: string;
+  }>({ show: false, percentage: 0, currentFile: "" });
   let imageIdCounter = galleryMedia.length;
 
   const mediaDataCollection: MediaData[] =
@@ -50,8 +55,37 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
     try {
       console.log("Starting upload...", fileArray);
 
-      // Upload files using the uploadApi utility
-      const uploadedFiles = await uploadFiles(fileArray, []);
+      // Upload files using the uploadApi utility with progress tracking
+      const uploadedFiles = await uploadFiles(fileArray, [], {
+        onProgress: (progress) => {
+          setUploadProgress({
+            show: true,
+            percentage: progress.percentage,
+            currentFile: progress.currentFile,
+          });
+        },
+        onSuccess: (files) => {
+          // Update media data collection in dataStore
+          const updatedMediaCollection = [
+            ...mediaDataCollection,
+            ...files.map((file) => ({
+              id: file.id,
+              name: file.name,
+              type: file.fileType,
+              src: file.fileUrl,
+              tags: [],
+              selected: false,
+            })),
+          ];
+          dataStore.set("mediaDataCollection", updatedMediaCollection);
+
+          setUploadProgress({ show: false, percentage: 0, currentFile: "" });
+          console.log("All files uploaded successfully");
+        },
+        onFail: () => {
+          setUploadProgress({ show: false, percentage: 0, currentFile: "" });
+        },
+      });
 
       // Add uploaded files to gallery
       uploadedFiles.forEach((file) => {
@@ -65,12 +99,9 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
           selected: false,
         });
       });
-
-      console.log("All files uploaded successfully");
-      alert("Files uploaded successfully!");
     } catch (error) {
       console.error("Upload error:", error);
-      alert(`Upload failed: ${(error as Error).message}`);
+      setUploadProgress({ show: false, percentage: 0, currentFile: "" });
     } finally {
       // Reset the file input
       if (fileInputRef.current) {
@@ -144,6 +175,14 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
     return nameMatch || tagsMatch;
   });
 
+  // Calculate how many items are already selected in the gallery
+  const alreadySelectedCount = galleryMedia.filter(
+    (item) => item.selected,
+  ).length;
+  const maxSelections = 4;
+  const remainingSlots = maxSelections - alreadySelectedCount;
+  const totalSelected = alreadySelectedCount + selectedMediaItems.size;
+
   return (
     <>
       <section
@@ -173,8 +212,8 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
               className="ucpe_btn-outline"
               onClick={() => setShowMediaLibrary(true)}
             >
-              <i className="fa-solid fa-folder-open"></i> 
-               &nbsp; Select from Media Library
+              <i className="fa-solid fa-folder-open"></i>
+              &nbsp; Select from Media Library
             </button>
             <label
               className="ucpe_btn-outline"
@@ -191,6 +230,48 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
               />
             </label>
           </div>
+
+          {/* Upload Progress Indicator */}
+          {uploadProgress.show && (
+            <div
+              style={{
+                marginTop: "16px",
+                padding: "12px",
+                background: "var(--surface-secondary, #f5f5f5)",
+                borderRadius: "6px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "8px",
+                  fontSize: "13px",
+                }}
+              >
+                <span>Uploading: {uploadProgress.currentFile}</span>
+                <span>{uploadProgress.percentage}%</span>
+              </div>
+              <div
+                style={{
+                  width: "100%",
+                  height: "6px",
+                  background: "var(--border, #e0e0e0)",
+                  borderRadius: "3px",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${uploadProgress.percentage}%`,
+                    height: "100%",
+                    background: "var(--primary, #007bff)",
+                    transition: "width 0.3s ease",
+                  }}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="ucpe_gallery">
             {galleryMedia.length === 0 ? (
@@ -288,7 +369,7 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
                 <span
                   style={{
                     background:
-                      selectedMediaItems.size >= 4
+                      totalSelected >= maxSelections
                         ? "var(--danger, #dc3545)"
                         : "var(--primary, #007bff)",
                     color: "white",
@@ -298,7 +379,7 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
                     fontWeight: "600",
                   }}
                 >
-                  {selectedMediaItems.size}/4 selected
+                  {totalSelected}/{maxSelections} selected
                 </span>
                 <button
                   className="ucpe_modal-close"
@@ -332,7 +413,24 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
                   <i className="fa-solid fa-video"></i> Videos
                 </button>
               </div>
-
+              {/* Info message about selection limit */}
+              {alreadySelectedCount > 0 && (
+                <div
+                  style={{
+                    padding: "8px 12px",
+                    marginBottom: "12px",
+                    background: "var(--surface-secondary, #f5f5f5)",
+                    borderRadius: "4px",
+                    fontSize: "13px",
+                    color: "var(--text-secondary, #666)",
+                  }}
+                >
+                  {alreadySelectedCount} already selected in gallery.{" "}
+                  {remainingSlots > 0
+                    ? `You can select ${remainingSlots} more.`
+                    : "Maximum reached."}
+                </div>
+              )}
               {/* Search Field */}
               <div style={{ marginBottom: "16px" }}>
                 <input
@@ -370,8 +468,10 @@ export const Step2Visuals: React.FC<Step2VisualsProps> = ({
                         if (newSelected.has(item.src)) {
                           newSelected.delete(item.src);
                         } else {
-                          // Limit to 4 selections
-                          if (newSelected.size < 4) {
+                          // Limit total selections to maxSelections (4)
+                          const currentTotal =
+                            alreadySelectedCount + newSelected.size;
+                          if (currentTotal < maxSelections) {
                             newSelected.add(item.src);
                           }
                         }
