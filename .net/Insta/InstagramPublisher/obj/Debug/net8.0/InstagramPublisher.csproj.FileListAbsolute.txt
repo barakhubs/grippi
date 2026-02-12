@@ -1,0 +1,12 @@
+D:\grippi\.net\Insta\InstagramPublisher\bin\Debug\net8.0\InstagramPublisher.deps.json
+D:\grippi\.net\Insta\InstagramPublisher\bin\Debug\net8.0\InstagramPublisher.dll
+D:\grippi\.net\Insta\InstagramPublisher\bin\Debug\net8.0\InstagramPublisher.pdb
+D:\grippi\.net\Insta\InstagramPublisher\obj\Debug\net8.0\InstagramPublisher.GeneratedMSBuildEditorConfig.editorconfig
+D:\grippi\.net\Insta\InstagramPublisher\obj\Debug\net8.0\InstagramPublisher.AssemblyInfoInputs.cache
+D:\grippi\.net\Insta\InstagramPublisher\obj\Debug\net8.0\InstagramPublisher.AssemblyInfo.cs
+D:\grippi\.net\Insta\InstagramPublisher\obj\Debug\net8.0\InstagramPublisher.csproj.CoreCompileInputs.cache
+D:\grippi\.net\Insta\InstagramPublisher\obj\Debug\net8.0\InstagramPublisher.sourcelink.json
+D:\grippi\.net\Insta\InstagramPublisher\obj\Debug\net8.0\InstagramPublisher.dll
+D:\grippi\.net\Insta\InstagramPublisher\obj\Debug\net8.0\refint\InstagramPublisher.dll
+D:\grippi\.net\Insta\InstagramPublisher\obj\Debug\net8.0\InstagramPublisher.pdb
+D:\grippi\.net\Insta\InstagramPublisher\obj\Debug\net8.0\ref\InstagramPublisher.dll

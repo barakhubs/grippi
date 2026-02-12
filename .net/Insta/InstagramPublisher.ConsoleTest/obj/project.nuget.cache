@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "WrxOFj0+G3xKSieqOpA9f1zqzKwBx9rENmyUTPGVPsAAj69FwIhOAhdx+rkTweqXO4jkBJNEna8aKgMJ38P9Ww==",
+  "success": true,
+  "projectFilePath": "D:\\grippi\\.net\\Insta\\InstagramPublisher.ConsoleTest\\InstagramPublisher.ConsoleTest.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\LENOVO\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
