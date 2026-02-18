@@ -27,7 +27,10 @@ namespace InstagramPublisher
                 // Step 1: Create container
                 string creationId = CreateImageContainer(instagramAccountId, accessToken, imageUrl, caption);
 
-                // Step 2: Publish
+                // Step 2: Wait for image to be ready (usually instant, but can have delays)
+                WaitForImageReady(instagramAccountId, accessToken, creationId);
+
+                // Step 3: Publish
                 string mediaId = PublishContainer(instagramAccountId, accessToken, creationId);
                 
                 success = true;
@@ -234,10 +237,16 @@ namespace InstagramPublisher
                     itemIds[i] = CreateCarouselItem(instagramAccountId, accessToken, imageUrls[i]);
                 }
 
-                // Step 2: Create carousel container
+                // Step 2: Wait for all items to be ready (images usually process quickly but may need a moment)
+                foreach (string itemId in itemIds)
+                {
+                    WaitForCarouselItemReady(instagramAccountId, accessToken, itemId);
+                }
+
+                // Step 3: Create carousel container
                 string carouselId = CreateCarouselContainer(instagramAccountId, accessToken, itemIds, caption);
 
-                // Step 3: Publish
+                // Step 4: Publish
                 string mediaId = PublishContainer(instagramAccountId, accessToken, carouselId);
                 
                 success = true;
@@ -389,6 +398,56 @@ namespace InstagramPublisher
             }
 
             throw new TimeoutException($"Video processing timed out after {maxWaitSeconds} seconds");
+        }
+
+        /// <summary>
+        /// Wait for carousel item to be ready (images usually process quickly)
+        /// </summary>
+        private void WaitForCarouselItemReady(string instagramAccountId, string accessToken, string itemId, int maxWaitSeconds = 30)
+        {
+            int elapsed = 0;
+            int pollInterval = 2; // Check every 2 seconds (images are usually faster than videos)
+
+            while (elapsed < maxWaitSeconds)
+            {
+                string status = GetContainerStatus(instagramAccountId, accessToken, itemId);
+
+                if (status == "FINISHED")
+                    return;
+
+                if (status == "ERROR")
+                    throw new Exception($"Carousel item processing failed for item {itemId}");
+
+                Thread.Sleep(pollInterval * 1000);
+                elapsed += pollInterval;
+            }
+
+            throw new TimeoutException($"Carousel item processing timed out after {maxWaitSeconds} seconds");
+        }
+
+        /// <summary>
+        /// Wait for single image to be ready (usually instant, but can have delays)
+        /// </summary>
+        private void WaitForImageReady(string instagramAccountId, string accessToken, string creationId, int maxWaitSeconds = 30)
+        {
+            int elapsed = 0;
+            int pollInterval = 2; // Check every 2 seconds
+
+            while (elapsed < maxWaitSeconds)
+            {
+                string status = GetContainerStatus(instagramAccountId, accessToken, creationId);
+
+                if (status == "FINISHED")
+                    return;
+
+                if (status == "ERROR")
+                    throw new Exception("Image processing failed");
+
+                Thread.Sleep(pollInterval * 1000);
+                elapsed += pollInterval;
+            }
+
+            throw new TimeoutException($"Image processing timed out after {maxWaitSeconds} seconds");
         }
 
         /// <summary>

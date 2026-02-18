@@ -12,7 +12,7 @@ namespace InstagramPublisher.ConsoleTest
 
             // Configuration - REPLACE WITH YOUR VALUES
             string instagramAccountId = "17841480212587776";
-            string accessToken = "EAAVIQ1otZA9oBQqZBq58AIp03St3laUHKl0HFOQdAZC4uVJ1LegRKRGRu5hZBxjZBfWpShiWqIRY87MtDs3gMET5hLVrkq3hxi3IdJZCMJahwaLfGfkbSrNiaWqTfCr9DvTp8tZAuL0p9mWzU9cvZBhiZAzZAGOnXulrtxhct7tSlZAheSMYJGcdhiOAyKNoKrjIZBXPsb0Fef6BNeRMejrfReCXmoNWwQBEzCckdEFFNaUZD";
+            string accessToken = "EAAVIQ1otZA9oBQr5jWc7EO4AJcwTbcYSdIXFHoZAUruM5erkR3ERqSQVagXuJCl1DTFybZCdiEB1DVVo8aIq2zV1tI3uwqB9Udvs9V1RFslMfd49POPAKRIU46nVakjXgnKRNbAh66Vk4Uabv1lM9FD4vLAWwQZCy0fmlZCtPUsRzM6iqaoxt3MwafMQDln2fUl9W0KgWFKWDx1ZBbDzRxEt0Mt2fvALSoSfLjzYoPmvoZD";
 
             try
             {

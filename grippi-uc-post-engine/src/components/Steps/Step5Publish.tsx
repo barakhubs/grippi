@@ -164,7 +164,7 @@ export const Step5Publish: React.FC<Step5PublishProps> = ({
                 padding: "60px 20px",
               }}
             >
-              <div style={{ textAlign: "center", width: "500px" }}>
+              <div style={{ textAlign: "center", width: "40%" }}>
                 <div style={{ fontSize: "48px", marginBottom: "16px" }}>
                   {hasFailures ? "⚠️" : "✅"}
                 </div>
@@ -196,7 +196,7 @@ export const Step5Publish: React.FC<Step5PublishProps> = ({
                 style={{
                   marginTop: "24px",
                   textAlign: "left",
-                  width: "500px",
+                  width: "60%",
                   margin: "24px",
                   overflowY: "auto",
                   maxHeight: "400px",
