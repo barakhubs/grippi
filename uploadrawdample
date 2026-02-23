@@ -1,0 +1,739 @@
+<Definition auto="false">
+<Property name ="SDT_access_token" type = "sdt"/>
+<Property name ="Url" type = "string"/>
+<Property name ="Message" type = "string"/>
+<Property name ="isUpdateMode" type = "boolean"/>
+<Property name ="ImageId" type = "string"/>
+<Property name ="ImagePath" type = "string"/>
+<Property name ="ImageTags" type = "string"/>
+<Event Name="OnUpload" />
+<Event Name="OnUpdateImage" />
+<Event Name="OnFail" />
+
+<script Name="Start" When="AfterShow">
+  const UC = this
+  const isUpdateModeRaw = UC.getProp ? UC.getProp("isUpdateMode") : UC.isUpdateMode;
+  const isUpdateMode =
+    isUpdateModeRaw === true ||
+    isUpdateModeRaw === "true" ||
+    isUpdateModeRaw === 1 ||
+    isUpdateModeRaw === "1";
+
+  const dropzone = document.getElementById("uc_fl-dropzone");
+  const fileInput = document.getElementById("uc_fl-fileInput");
+  const fileList = document.getElementById("uc_fl-fileList");
+  const tagsInput = document.getElementById("uc_fl-tagsInput");
+  const tagInputField = document.getElementById("uc_fl-tagInput");
+  const saveButton = document.getElementById("uc_fl-saveButton");
+  const UploadButton = saveButton;
+  const progressContainer = document.getElementById("uc_fl-progress");
+  const progressBar = document.getElementById("uc_fl-progressBar");
+  const progressLabel = document.getElementById("uc_fl-progressLabel");
+  const dropzoneDefaultContent = dropzone ? dropzone.innerHTML : "";
+
+  if (fileInput) {
+    fileInput.multiple = false;
+  }
+
+
+  /** @type {File[]} */
+  let files = [];
+  /** @type {string} */
+  let currentImagePath = "";
+  /** @type {string[]} */
+  let tags = [];
+  /** @type {"image"|"video"|"pdf"} */
+  let currentKind = "image";
+
+  function parseList(rawValue) {
+    if (Array.isArray(rawValue)) {
+      return rawValue
+        .map((item) => String(item || "").trim())
+        .filter(Boolean);
+    }
+
+    const value = String(rawValue || "").trim();
+    if (!value) return [];
+
+    if (value.startsWith("[") && value.endsWith("]")) {
+      try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+          return parsed
+            .map((item) => String(item || "").trim())
+            .filter(Boolean);
+        }
+      } catch (error) {
+      }
+    }
+
+    return value
+      .split(/[;,\n]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  function getDisplayNameFromPath(path) {
+    const cleanPath = String(path || "").split("?")[0];
+    const pathParts = cleanPath.split("/");
+    const name = pathParts[pathParts.length - 1] || cleanPath;
+    return decodeURIComponent(name);
+  }
+  
+  function updateButtonState() {
+    if (files.length === 0 && !currentImagePath){
+	    saveButton.style.cursor="not-allowed";
+	    saveButton.disabled = true;
+	} else {
+	    saveButton.style.cursor="pointer";
+	    saveButton.disabled = false;
+	}
+  }
+
+  function formatSize(bytes) {
+    if (bytes === 0) return "0 B";
+    const units = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const value = bytes / Math.pow(1024, i);
+    return `${value.toFixed(1)} ${units[i]}`;
+  }
+
+  function isImage(file) {
+    return file.type.startsWith("image/");
+  }
+
+  function isVideo(file) {
+    return file.type.startsWith("video/");
+  }
+
+  function renderDropzonePreview() {
+  if (!dropzone) return;
+
+  const selectedFile = files.length ? files[0] : null;
+  const hasSelected = !!selectedFile;
+  const hasCurrent = !!currentImagePath;
+
+  // Nothing selected + no existing media => show default
+  if (!hasSelected && !hasCurrent) {
+    dropzone.innerHTML = dropzoneDefaultContent;
+    return;
+  }
+
+  // Decide what kind to preview
+  const previewKind = hasSelected ? kindFromFile(selectedFile) : currentKind; // "image" | "video" | "pdf"
+
+  dropzone.innerHTML = "";
+
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "relative";
+  wrapper.style.width = "100%";
+  wrapper.style.height = "100%";
+  wrapper.style.textAlign = "center";
+
+  // --- Remove button ---
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.innerHTML = "&times;";
+  removeBtn.style.position = "absolute";
+  removeBtn.style.top = "8px";
+  removeBtn.style.right = "8px";
+  removeBtn.style.width = "28px";
+  removeBtn.style.height = "28px";
+  removeBtn.style.border = "none";
+  removeBtn.style.borderRadius = "50%";
+  removeBtn.style.cursor = "pointer";
+
+  removeBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // If there is a selected file, clear it. Else clear current path.
+    if (files.length) {
+      files = [];
+    } else {
+      currentImagePath = "";
+    }
+
+    if (fileInput) fileInput.value = "";
+
+    renderFiles();
+    updateButtonState();
+  });
+
+  // --- Preview content ---
+  if (previewKind === "image") {
+    const img = document.createElement("img");
+
+    if (hasSelected) {
+      const objUrl = URL.createObjectURL(selectedFile);
+      img.src = objUrl;
+      img.alt = selectedFile.name;
+      img.onload = () => URL.revokeObjectURL(objUrl);
+    } else {
+      img.src = currentImagePath;
+      img.alt = getDisplayNameFromPath(currentImagePath);
+    }
+
+    img.style.width = "auto";
+    img.style.height = "100%";
+    img.style.maxWidth = "100%";
+    img.style.objectFit = "contain";
+
+    wrapper.appendChild(img);
+  } else if (previewKind === "video") {
+    const video = document.createElement("video");
+    video.controls = true;
+    video.muted = true;
+    video.playsInline = true;
+
+    video.style.width = "100%";
+    video.style.height = "100%";
+    video.style.objectFit = "contain";
+
+    if (hasSelected) {
+      const objUrl = URL.createObjectURL(selectedFile);
+      video.src = objUrl;
+      video.onloadeddata = () => URL.revokeObjectURL(objUrl);
+    } else {
+      video.src = currentImagePath;
+    }
+
+    wrapper.appendChild(video);
+    console.log("previewKind",previewKind)
+  } else if (previewKind === "pdf") {
+    const box = document.createElement("div");
+    box.style.height = "100%";
+    box.style.display = "flex";
+    box.style.flexDirection = "column";
+    box.style.alignItems = "center";
+    box.style.justifyContent = "center";
+    box.style.gap = "10px";
+    box.style.color = "#374151";
+    box.style.padding = "12px";
+
+    const icon = document.createElement("div");
+    icon.className = "uc_fl-file-generic-icon";
+    icon.style.transform = "scale(1.2)";
+
+    const name = document.createElement("div");
+    name.style.fontSize = "13px";
+    name.style.maxWidth = "90%";
+    name.style.whiteSpace = "nowrap";
+    name.style.overflow = "hidden";
+    name.style.textOverflow = "ellipsis";
+    name.textContent = hasSelected
+      ? selectedFile.name
+      : getDisplayNameFromPath(currentImagePath);
+
+    const openBtn = document.createElement("a");
+    openBtn.textContent = "Open PDF";
+    openBtn.style.display = "inline-block";
+    openBtn.style.padding = "8px 12px";
+    openBtn.style.borderRadius = "6px";
+    openBtn.style.background = "#fffbeb";
+    openBtn.style.border = "1px solid rgba(230, 183, 27, 0.6)";
+    openBtn.style.color = "#374151";
+    openBtn.style.textDecoration = "none";
+    openBtn.style.fontSize = "13px";
+    openBtn.style.fontWeight = "600";
+    openBtn.target = "_blank";
+    openBtn.rel = "noopener noreferrer";
+
+    if (hasSelected) {
+      const objUrl = URL.createObjectURL(selectedFile);
+      openBtn.href = objUrl;
+      // best-effort cleanup
+      window.addEventListener("beforeunload", () => {
+        try {
+          URL.revokeObjectURL(objUrl);
+        } catch {}
+      });
+    } else {
+      openBtn.href = currentImagePath;
+    }
+
+    box.appendChild(icon);
+    box.appendChild(name);
+    box.appendChild(openBtn);
+
+    wrapper.appendChild(box);
+  } else {
+    // Should not happen (since MediaType is only Image/Video/PDF),
+    // but keep a safe fallback.
+    const label = document.createElement("div");
+    label.style.color = "#6b7280";
+    label.style.padding = "12px";
+    label.textContent = hasSelected
+      ? selectedFile.name
+      : getDisplayNameFromPath(currentImagePath);
+    wrapper.appendChild(label);
+  }
+
+  wrapper.appendChild(removeBtn);
+  dropzone.appendChild(wrapper);
+}
+
+
+  function renderFiles() {
+    renderDropzonePreview();
+    if (fileList) {
+      fileList.innerHTML = "";
+      fileList.style.display = "none";
+    }
+  }
+
+  function addFiles(newFiles) {
+	const array = Array.from(newFiles || []);
+	if (!array.length) return;
+	
+	const picked = array[0];
+	
+	if (isUpdateMode) {
+		const pickedKind = kindFromFile(picked);
+		
+		if (!pickedKind || pickedKind !== currentKind) {
+			if (UC.OnFail) {
+			UC.Message = `Invalid file type. Expected ${currentKind.toUpperCase()}.`;
+			UC.OnFail();
+			} else {
+			alert(`Invalid file type. Expected ${currentKind.toUpperCase()}.`);
+			}
+			if (fileInput) fileInput.value = "";
+			return;
+		}
+	}
+	
+		files = [picked];
+		renderFiles();
+		updateButtonState();
+	}
+
+
+  // Click to open file dialog
+  dropzone.addEventListener("click", () => {
+    setAcceptLocked();
+    fileInput.click();
+  });
+
+  fileInput.addEventListener("change", (event) => {
+    addFiles(event.target.files);
+    // Allow re-selecting the same file
+    event.target.value = "";
+  });
+
+  // Drag and drop handlers
+  ["dragenter", "dragover"].forEach((type) => {
+    dropzone.addEventListener(type, (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      dropzone.classList.add("uc_fl-drag-over");
+    });
+  });
+
+  ["dragleave", "dragend", "drop"].forEach((type) => {
+    dropzone.addEventListener(type, (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      dropzone.classList.remove("uc_fl-drag-over");
+    });
+  });
+
+  dropzone.addEventListener("drop", (event) => {
+    if (event.dataTransfer && event.dataTransfer.files) {
+      addFiles(event.dataTransfer.files);
+    }
+  });
+
+  function renderTags() {
+    // Keep the input, rebuild chips before it
+    const existingChips = tagsInput.querySelectorAll(".uc_fl-tag-chip");
+    existingChips.forEach((chip) => chip.remove());
+
+    tags.forEach((tag, index) => {
+      const chip = document.createElement("span");
+      chip.className = "uc_fl-tag-chip";
+      chip.textContent = tag;
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.innerHTML = "&times;";
+      remove.addEventListener("click", () => {
+        tags.splice(index, 1);
+        renderTags();
+      });
+
+      chip.appendChild(remove);
+      tagsInput.insertBefore(chip, tagInputField);
+    });
+  }
+
+  function tryAddTag(raw) {
+    const value = (raw || "").trim();
+    if (!value) return;
+    if (tags.includes(value)) return;
+    tags.push(value);
+    renderTags();
+  }
+
+  tagInputField.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault();
+      tryAddTag(tagInputField.value.replace(",", ""));
+      tagInputField.value = "";
+    } else if (
+      event.key === "Backspace" &&
+      !tagInputField.value &&
+      tags.length
+    ) {
+      // backspace removes last tag when input is empty
+      tags.pop();
+      renderTags();
+    }
+  });
+
+  tagInputField.addEventListener("blur", () => {
+    // On blur, commit any typed text as a tag
+    if (tagInputField.value.trim()) {
+      tryAddTag(tagInputField.value);
+      tagInputField.value = "";
+    }
+  });
+
+  if (isUpdateMode) {
+    const initialPaths = parseList(UC.ImagePath);
+    currentImagePath = initialPaths.length
+      ? initialPaths[0]
+      : String(UC.ImagePath || "").trim()
+	
+    currentKind = mediaTypeToKind(UC.MediaType);
+	
+    tags = parseList(UC.ImageTags);
+    renderTags();
+    renderFiles();
+  }
+
+  // Initialise button state
+  setAcceptLocked();
+  updateButtonState();
+
+  // Helper function to add random value to filename
+  function makeUniqueFilename(originalName) {
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const uniqueId = `${timestamp}_${randomSuffix}`;
+    
+    const lastDotIndex = originalName.lastIndexOf(".");
+    if (lastDotIndex === -1) {
+	      // No extension
+	      return `${originalName}_${uniqueId}`;
+    }
+    
+    const nameWithoutExt = originalName.substring(0, lastDotIndex);
+    const extension = originalName.substring(lastDotIndex);
+    return `${nameWithoutExt}_${uniqueId}${extension}`;
+  }
+
+function mediaTypeToKind(mt) {
+  // mt is exactly: "Video" | "Image" | "PDF"
+  if (mt === "Image") return "image";
+  if (mt === "Video") return "video";
+  return "pdf"; // "PDF"
+}
+
+function acceptForKind(kind) {
+  switch (kind) {
+    case "image": return "image/*";
+    case "video": return "video/*";
+    case "pdf":   return ".pdf,application/pdf";
+  }
+}
+
+function kindFromFile(file) {
+  if (!file) return null;
+  if (file.type?.startsWith("image/")) return "image";
+  if (file.type?.startsWith("video/")) return "video";
+  if (file.type === "application/pdf") return "pdf";
+  return null;
+}
+
+function setAcceptLocked() {
+  if (!fileInput) return;
+  if (!isUpdateMode) {
+    fileInput.accept = "image/*,video/*,.pdf";
+    return;
+  }
+  fileInput.accept = acceptForKind(currentKind);
+}
+
+  async function UploadData() {
+    try {
+      UploadButton.disabled = true;
+      UploadButton.textContent = "Uploading...";
+	
+      if (isUpdateMode && files.length === 0) {
+        UC.ImagePath = currentImagePath;
+        UC.ImageTags = JSON.stringify(tags);
+		
+        if (UC.OnUpdateImage) {
+          UC.Message = "Image updated successfully";
+          UC.OnUpdateImage();
+        }
+        return;
+      }
+	
+      if (progressContainer && progressBar && progressLabel) {
+        progressContainer.style.display = "block";
+        progressBar.style.width = "0%";
+        progressLabel.textContent = "0%";
+      }
+
+      const uploadedFiles = [];
+      let dropboxFailed = false;
+      let completedFiles = 0;
+
+      if (isUpdateMode && files.length > 1) {
+        files = [files[0]];
+      }
+
+      for (const file of files) {
+        const fileContent = await file.arrayBuffer();
+
+        let fileType = "other";
+        if (file.type.startsWith("image/")) {
+          fileType = "Image";
+        } else if (file.type.startsWith("video/")) {
+          fileType = "Video";
+        } else if (file.type === "application/pdf") {
+          fileType = "PDF";
+        }
+
+        const accessToken =
+          UC.SDT_access_token && UC.SDT_access_token.access_token
+            ? UC.SDT_access_token.access_token
+            : "";
+
+        // Generate unique filename to avoid conflicts
+        const uniqueFilename = makeUniqueFilename(file.name);
+
+        const uploadResponse = await fetch(
+          "https://content.dropboxapi.com/2/files/upload",
+          {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + accessToken,
+              "Dropbox-API-Arg": JSON.stringify({
+                autorename: true,
+                mode: "add",
+                mute: false,
+                path: "/" + uniqueFilename,
+                strict_conflict: false,
+              }),
+              "Content-Type": "application/octet-stream",
+            },
+            body: fileContent,
+          },
+        );
+
+        if (!uploadResponse.ok) {
+          console.error(
+            "Dropbox upload failed for",
+            file.name,
+            uploadResponse.status,
+            uploadResponse.statusText,
+          );
+          dropboxFailed = true;
+          break;
+        }
+
+        const uploadResult = await uploadResponse.json();
+
+        let fileUrl = "";
+        let shareUrl = "";
+
+        const linkResponse = await fetch(
+          "https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings",
+          {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + accessToken,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              path: uploadResult.path_display,
+              settings: {
+                access: "viewer",
+                audience: "public",
+                requested_visibility: "public",
+              },
+            }),
+          },
+        );
+
+        if (linkResponse.ok) {
+          const linkResult = await linkResponse.json();
+          shareUrl = linkResult.url;
+          fileUrl = linkResult.url + "&raw=1";
+        } else {
+          const errorData = await linkResponse.json();
+
+          if (
+            errorData.error &&
+            errorData.error[".tag"] === "shared_link_already_exists"
+          ) {
+
+            const existingLinksResponse = await fetch(
+              "https://api.dropboxapi.com/2/sharing/list_shared_links",
+              {
+                method: "POST",
+                headers: {
+                  Authorization: "Bearer " + accessToken,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  path: uploadResult.path_display,
+                  direct_only: false,
+                }),
+              },
+            );
+
+            if (!existingLinksResponse.ok) {
+              console.error(
+                "Failed to get existing links for",
+                file.name,
+                existingLinksResponse.status,
+              );
+              dropboxFailed = true;
+              break;
+            }
+
+            const existingLinksData = await existingLinksResponse.json();
+
+            if (existingLinksData.links && existingLinksData.links.length > 0) {
+              shareUrl = existingLinksData.links[0].url;
+              fileUrl = existingLinksData.links[0].url + "&raw=1";
+            } else {
+              console.error("No existing links found for file", file.name);
+              dropboxFailed = true;
+              break;
+            }
+          } else {
+            console.error(
+              "Failed to create shared link for",
+              file.name,
+              errorData,
+            );
+            dropboxFailed = true;
+            break;
+          }
+        }
+
+        uploadedFiles.push({
+          id: uploadResult.id,
+          name: uploadResult.name,
+          path: uploadResult.path_display,
+          shareUrl,
+          fileUrl,
+          fileType,
+        });
+  
+        completedFiles += 1;
+        if (progressContainer && progressBar && progressLabel) {
+          const percent = Math.round((completedFiles / files.length) * 100);
+          progressBar.style.width = `${percent}%`;
+          progressLabel.textContent = `${percent}%`;
+        }
+      }
+
+      if (dropboxFailed || uploadedFiles.length === 0) {
+        console.error(
+          "Aborting: one or more files failed to upload to Dropbox.",
+        );
+        if (UC.OnFail) {
+          UC.Message = "Upload to Dropbox failed. Nothing was saved.";
+          UC.OnFail();
+        }
+        return;
+      }
+
+      if (isUpdateMode) {
+        const updatedPath = uploadedFiles[0] ? uploadedFiles[0].fileUrl : "";
+        currentImagePath = updatedPath;
+        UC.ImagePath = updatedPath;
+        UC.ImageTags = JSON.stringify(tags);
+
+        files = [];
+        fileInput.value = "";
+        renderFiles();
+        updateButtonState();
+		
+        if (UC.OnUpdateImage) {
+          UC.Message = "Image updated successfully";
+          UC.OnUpdateImage();
+        }
+        return;
+      }
+
+      const apiUrl = (UC.Url || "").replace(/\/$/, "");
+
+      const apiResponse = await fetch(`${apiUrl}/api/media/media-upload`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          files: uploadedFiles.map((file) => ({
+            FileId: file.id,
+            FileName: file.name,
+            FileUrl: file.fileUrl,
+            FileShareUrl: file.shareUrl,
+            FileType: file.fileType,
+          })),
+          tags,
+        }),
+      });
+
+      if (!apiResponse.ok) {
+        throw new Error(
+          `API request failed: ${apiResponse.status} ${apiResponse.statusText}`,
+        );
+      }
+
+      const apiResult = await apiResponse.json();
+
+      if (apiResult.IsInserted === true) {
+        tags = [];
+        renderTags();
+
+        files = [];
+        fileList.innerHTML = "";
+        fileInput.value = "";
+
+      updateButtonState();
+	
+      if (UC.OnUpload) {
+        UC.Message = "Uploaded successfully";
+        UC.OnUpload();
+      }
+   	
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+    } finally {
+      UploadButton.disabled = false;
+      UploadButton.textContent = "Save Files";
+      if (progressContainer && progressBar && progressLabel) {
+        progressContainer.style.display = "none";
+        progressBar.style.width = "0%";
+        progressLabel.textContent = "";
+      }
+    }
+  }
+
+  saveButton.addEventListener("click", () => {
+    UploadData();
+  });
+
+</Script>
+
+</Definition>

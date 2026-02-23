@@ -77,13 +77,6 @@ export const Step5Publish: React.FC<Step5PublishProps> = ({
         totalSteps={5}
         onStepClick={() => {}}
       />
-
-      <div className="ucpe_panel-header">
-        <div>
-          <p className="ucpe_eyebrow">Step 5 of 5</p>
-        </div>
-      </div>
-
       <fieldset className="ucpe_fieldset">
         <legend style={{ width: "auto", border: "none" }}>
           Review & Publish

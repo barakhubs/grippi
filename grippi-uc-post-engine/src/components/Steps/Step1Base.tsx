@@ -101,13 +101,6 @@ export const Step1Base: React.FC<Step1BaseProps> = ({
         totalSteps={5}
         onStepClick={() => {}}
       />
-
-      <div className="ucpe_panel-header">
-        <div>
-          <p className="ucpe_eyebrow">Step 1 of 5</p>
-        </div>
-      </div>
-
       <form
         className="ucpe_form-horizontal"
         onSubmit={(e) => e.preventDefault()}

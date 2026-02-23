@@ -120,9 +120,6 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
         />
 
         <div className="ucpe_panel-header">
-          <div>
-            <p className="ucpe_eyebrow">Step 4 of 5</p>
-          </div>
           <div className="ucpe_view-toggles" aria-label="Preview toggles">
             <label>
               <input

@@ -16,6 +16,7 @@ export interface MediaData {
   type: string;
   src: string;
   tags: string[];
+  createdAt?: string | number | Date;
   selected: boolean;
 }
 

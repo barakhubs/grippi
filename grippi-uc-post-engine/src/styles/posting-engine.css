@@ -13,7 +13,7 @@
   --error-bg: #fef2f2;
   --warning: #f59e0b;
   --shadow: 0 10px 35px rgba(18, 38, 63, 0.12);
-  --radius: 14px;
+  --radius: 4px;
   --font-base: "Segoe UI", "Bahnschrift", "Trebuchet MS", sans-serif;
 }
 
@@ -160,10 +160,10 @@ label {
 }
 
 .ucpe_panel {
-  background: var(--surface);
+  /* background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 12px;
+  padding: 12px; */
 }
 
 .ucpe_step-content {
@@ -243,9 +243,9 @@ label {
 }
 
 .ucpe_fieldset {
-  border: 1px solid var(--border);
+  /* border: 1px solid var(--border); */
   border-radius: 8px;
-  padding: 24px;
+  /* padding: 24px; */
   margin: 0;
   background: #fdfefe;
 }
@@ -1151,7 +1151,8 @@ input[type="radio"]:focus {
   background: var(--bg);
 }
 .ucpe_btn-outline:hover {
-  background: rgba(22, 163, 74, 0.1);
+  background: #e6b71b;
+  color: #fff;
 }
 .ucpe_btn-soft:hover {
   background: rgba(37, 99, 255, 0.15);
@@ -1505,6 +1506,21 @@ input[type="radio"]:focus {
   display: block;
 }
 
+.ucpe_gallery-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #eceff4;
+}
+
+.ucpe_gallery-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.2s ease;
+}
+
 .ucpe_image-card-actions {
   position: absolute;
   bottom: 0;
@@ -1589,13 +1605,28 @@ input[type="radio"]:focus {
   font-size: 16px;
 }
 
-.ucpe_media-library-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 16px;
-  max-height: 60vh;
+.ucpe_media-library-scroll {
+  max-height: 55vh;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 4px;
+  scrollbar-width: thin;
+}
+
+.ucpe_media-library-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.ucpe_masonry-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
 
 .ucpe_media-library-item {
@@ -1603,30 +1634,144 @@ input[type="radio"]:focus {
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  border: 3px solid transparent;
+  border: 1px solid #dde2ea;
   transition: all 0.2s;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 16px;
+  break-inside: avoid;
+  background: #fff;
 }
 
 .ucpe_media-library-item:hover {
-  border-color: var(--accent);
+  border-color: #c6ccd8;
 }
 
 .ucpe_media-library-item.ucpe_selected {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(37, 99, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(230, 183, 27, 0.35);
 }
 
 .ucpe_media-library-item img {
   width: 100%;
-  height: 150px;
-  object-fit: cover;
+  height: auto;
+  max-height: 360px;
+  object-fit: contain;
   display: block;
+}
+
+.ucpe_media-library-image-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  max-height: 360px;
+  overflow: hidden;
+  background: #eceff4;
+}
+
+.ucpe_media-library-image-wrapper img {
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: contain;
+  transition: opacity 0.2s ease;
+}
+
+.ucpe_media-library-image-wrapper video {
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: contain;
+  display: block;
+}
+
+.ucpe_media-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 8, 8, 0.452);
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.ucpe_media-hover-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.ucpe_media-hover-name {
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ucpe_media-hover-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ucpe_media-hover-tag {
+  background: rgba(0, 0, 0, 0.68);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ucpe_shimmer-loader {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #e6e9ef 25%, #f1f3f7 50%, #e6e9ef 75%);
+  background-size: 200% 100%;
+  animation: ucpe-shimmer 1.2s infinite;
+}
+
+@keyframes ucpe-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 1200px) {
+  .ucpe_masonry-col:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .ucpe_masonry-col:nth-child(n + 3) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .ucpe_masonry-col:nth-child(n + 2) {
+    display: none;
+  }
 }
 
 .ucpe_media-select-overlay {
   position: absolute;
   top: 8px;
   right: 8px;
+  z-index: 3;
 }
 
 .ucpe_select-badge {

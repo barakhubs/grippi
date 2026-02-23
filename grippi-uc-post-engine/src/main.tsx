@@ -11,7 +11,6 @@ export function createWidget(socialMediaChannels: Channel[], mediaDataCollection
   dataStore.set("mediaDataCollection", mediaDataCollection);
   dataStore.set("baseUrl", baseUrl);
   dataStore.set("dropboxAccessToken", accessToken);
-  console.log("accessToken", accessToken);
   return createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <App />
