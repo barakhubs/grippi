@@ -119,35 +119,34 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
           onStepClick={() => {}}
         />
 
-        <div className="ucpe_panel-header">
-          <div className="ucpe_view-toggles" aria-label="Preview toggles">
-            <label>
-              <input
-                type="radio"
-                name="preview-mode"
-                value="mobile"
-                checked={previewMode === "mobile"}
-                onChange={() => onSetPreviewMode("mobile")}
-              />
-              Mobile
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="preview-mode"
-                value="desktop"
-                checked={previewMode === "desktop"}
-                onChange={() => onSetPreviewMode("desktop")}
-              />
-              Desktop
-            </label>
-          </div>
-        </div>
-
         <fieldset className="ucpe_fieldset">
-          <legend style={{ width: "auto", border: "none" }}>
-            Review & Preview
-          </legend>
+          <div className="ucpe_panel-header">
+            <legend style={{ width: "auto", border: "none" }}>
+              Review & Preview
+            </legend>
+            <div className="ucpe_view-toggles" aria-label="Preview toggles">
+              <label>
+                <input
+                  type="radio"
+                  name="preview-mode"
+                  value="mobile"
+                  checked={previewMode === "mobile"}
+                  onChange={() => onSetPreviewMode("mobile")}
+                />
+                Mobile
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="preview-mode"
+                  value="desktop"
+                  checked={previewMode === "desktop"}
+                  onChange={() => onSetPreviewMode("desktop")}
+                />
+                Desktop
+              </label>
+            </div>
+          </div>
 
           <div className="ucpe_platform-selector">
             {selectedChannels.map((channelId) => {
